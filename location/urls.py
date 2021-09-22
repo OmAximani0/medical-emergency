@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import LocationView
+from .views import AddLocationView, AllLocationView
 
 urlpatterns = [
-    path('add/', LocationView.as_view())
+    path('add/', AddLocationView.as_view()),
+    path('all/', AllLocationView.as_view()),
 ]
