@@ -34,7 +34,7 @@ class AddLocationView(APIView):
         self.client.messages.create(
             body=f"Lat: {data.get('lat')} \nLang: {data.get('long')} \nVehicle No.: {data.get('vehicle_no')} \nDevice ID: {data.get('device_id')}",
             from_='+12058393425',
-            to='+917259659254'
+            to=os.environ['TO']
         )
 
 class AllLocationView(APIView):
