@@ -3,8 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import LocationSerializer
 from .models import Location
+from twilio.rest import Client
+import os
 
 class AddLocationView(APIView):
+
+    account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    client = Client(account_sid, auth_token)
+
     try:
         def post(self, request):
             try:
@@ -12,6 +19,7 @@ class AddLocationView(APIView):
                 serializer = LocationSerializer(data=request.data)
                 if(serializer.is_valid(raise_exception=True)):
                     serializer.save()
+                    self.send_sms(serializer.validated_data)
                     serializer.sendToClient()
                     response['msg'] = 'Location added!'
                     return Response(response, status=status.HTTP_200_OK)
@@ -21,6 +29,13 @@ class AddLocationView(APIView):
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         print(e)
+
+    def send_sms(self, data):
+        self.client.messages.create(
+            body=f"Lat: {data.get('lat')} \nLang: {data.get('long')} \nVehicle No.: {data.get('vehicle_no')} \nDevice ID: {data.get('device_id')}",
+            from_='+12058393425',
+            to='+917259659254'
+        )
 
 class AllLocationView(APIView):
     try:
